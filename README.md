@@ -71,6 +71,29 @@ shutil.copy2(file_path, dest_file_path)
 shutil.move(file_path, dest_file_path)
 ```
 
+【高速化】事前スキャンをスキップしたい
+ファイル数が数十万件あり、最初のスキャン（数え上げ）待ち時間をなくして即座にコピーを開始したい場合は、スクリプトの 3. 【事前スキャン】 から 4. 【本処理】 のループ部分を以下のコードに置き換えてください。
+※ この場合、進捗バーは「％」や「残り時間」が出なくなり、「処理件数」のカウントアップのみになります。
+```python
+    print("即時処理モードで開始します...")
+
+    # ジェネレータ式を作成（メモリ展開せず、見つけ次第処理する）
+    files_iterator = (
+        p for p in source_dir.rglob('*') 
+        if p.is_file() and p.suffix.lower() in target_extensions
+    )
+
+    # totalを指定せずにループ
+    for file_path in tqdm(files_iterator, desc="Copying", unit="file"):
+        try:
+            relative_path = file_path.relative_to(source_dir)
+            new_filename = "_".join(relative_path.parts)
+            dest_file_path = dest_dir / new_filename
+            shutil.copy2(file_path, dest_file_path)
+        except Exception as e:
+            tqdm.write(f"[エラー] {file_path.name}: {e}")
+```
+
 注意事項
 • パスの長さ制限 (Windows):
 階層が非常に深く、かつ日本語の長いフォルダ名などが連結されると、Windowsのパス長制限（約260文字）を超える可能性があります。その場合、出力先フォルダをドライブ直下（例: C:\Data）にするなどして調整してください。
