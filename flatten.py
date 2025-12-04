@@ -37,11 +37,15 @@ def flatten_directory_files(source_path, dest_path):
     # 3. 【事前スキャン】総数を確定させる
     # tqdmで正確なバーを出すために、イテレータではなく一度リストにします
     files_to_process = []
+    skipped_files = []
     
     # rglob('*') は日本語ファイル名も深い階層もすべて取得します
     for p in source_dir.rglob('*'):
-        if p.is_file() and p.suffix.lower() in target_extensions:
-            files_to_process.append(p)
+        if p.is_file():
+            if p.suffix.lower() in target_extensions:
+                files_to_process.append(p)
+            else:
+                skipped_files.append(p)
 
     total_files = len(files_to_process)
     print(f"スキャン完了: 対象ファイル {total_files} 件")
@@ -91,6 +95,12 @@ def flatten_directory_files(source_path, dest_path):
     print("-" * 40)
     print(f"処理完了: 成功 {success_count} 件 / 失敗 {error_count} 件")
     print(f"保存先: {dest_dir}")
+
+    if skipped_files:
+        print("-" * 40)
+        print("【スキップされたファイル一覧】(拡張子対象外)")
+        for p in skipped_files:
+            print(f"{p}")
 
 # ==========================================
 # 設定エリア (Windowsのパスは r"..." で囲んでください)
