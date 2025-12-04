@@ -22,6 +22,10 @@ def flatten_directory_files(source_path, dest_path):
         print(f"[エラー] 元のディレクトリが見つかりません: {source_dir}")
         return
 
+    if source_dir.resolve() == dest_dir.resolve():
+        print(f"[エラー] 元のディレクトリと出力先が同じです: {source_dir}")
+        return
+
     # 2. 出力先の作成
     dest_dir.mkdir(parents=True, exist_ok=True)
 
@@ -50,6 +54,7 @@ def flatten_directory_files(source_path, dest_path):
     # 4. 【本処理】プログレスバー付きでコピー実行
     success_count = 0
     error_count = 0
+    seen_filenames = set()
 
     for file_path in tqdm(files_to_process, desc="Copying", unit="file"):
         try:
@@ -61,6 +66,11 @@ def flatten_directory_files(source_path, dest_path):
             
             # 出力先パス
             dest_file_path = dest_dir / new_filename
+
+            # 衝突チェック
+            if new_filename in seen_filenames:
+                tqdm.write(f"[警告] ファイル名が重複しています: {new_filename} (元: {file_path})")
+            seen_filenames.add(new_filename)
 
             # コピー実行 (移動したい場合は shutil.move に変更)
             shutil.copy2(file_path, dest_file_path)
