@@ -19,9 +19,5 @@ jobs:
       - name: Set up Python
         run: uv python install
 
-      - name: Install dependencies
-        run: |
-          uv pip install pytest tqdm
-
       - name: Run tests
-        run: uv run pytest
+        run: uv run --with pytest --with tqdm pytest
