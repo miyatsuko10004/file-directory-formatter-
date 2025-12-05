@@ -23,24 +23,23 @@
 このディレクトリに `flatten.py`（Pythonスクリプト）を配置。
 
 ### 2. 設定
-`flatten.py` をテキストエディタで開き、ファイル最下部の設定エリアを修正。
+`SOURCE_DIR` と `DEST_DIR` は、プロジェクトルートにある `.env` ファイルで設定します。
+`.env.example` を参考に、プロジェクトルートに `.env` ファイルを作成し、以下の形式で記述してください。
 
-```python
-# ==========================================
-# 設定エリア
-# ==========================================
-
+```
 # 1. 元のファイルが入っているディレクトリ (絶対パス推奨)
-SOURCE_DIR = r"C:\Users\YourName\Documents\TargetData"
+SOURCE_DIR="C:\Users\YourName\Documents\TargetData"
 
 # 2. まとめたファイルを保存するディレクトリ
-DEST_DIR = r"C:\Users\YourName\Documents\FlattenedOutput"
+DEST_DIR="C:\Users\YourName\Documents\FlattenedOutput"
 ```
+
+注意: `.env` ファイルはGitの管理対象外(`.gitignore` に追加済み)です。各自の環境に合わせて設定してください。
 
 ### 3. 実行
 ターミナル（PowerShell / Command Prompt / Bash）で以下のコマンドを実行。
-uv を使用する場合（推奨）:
-必要なライブラリ（tqdm）が自動でセットアップされ、実行。
+`uv` を使用する場合（推奨）:
+必要なライブラリ（`tqdm`, `python-dotenv`）が自動でセットアップされ、`.env` ファイルの設定を読み込んで実行されます。
 
 ```bash
 uv run flatten.py
